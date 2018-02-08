@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
 import { Httpd, HttpdOptions } from '@ionic-native/httpd';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 
@@ -8,9 +8,16 @@ import { Camera, CameraOptions } from '@ionic-native/camera';
   templateUrl: 'home.html'
 })
 export class HomePage {
+  url:String;
+  pic:any;
 
-  constructor(public navCtrl: NavController, private httpd: Httpd, private camera: Camera) {
-
+  constructor(platform: Platform, public navCtrl: NavController, private httpd: Httpd, private camera: Camera) {
+    platform.ready().then(() => {
+      this.startWebServer()
+    });
+  }
+  ionicViewDidLoad() {
+    
   }
 
   startWebServer() {
@@ -22,6 +29,9 @@ export class HomePage {
 
     this.httpd.startServer(options).subscribe((data) => {
       console.log('Server is live');
+      this.url = data;
+      let pic = this.takePicture();
+      return pic;
     });
 
   }
@@ -38,6 +48,7 @@ export class HomePage {
      // imageData is either a base64 encoded string or a file URI
      // If it's base64:
      let base64Image = 'data:image/jpeg;base64,' + imageData;
+     return base64Image
     }, (err) => {
      // Handle error
     });
